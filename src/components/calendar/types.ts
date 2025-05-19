@@ -4,6 +4,7 @@ export interface EventItem {
   date: string;
   description?: string;
   type?: string;
+  color?: string;
   completed_at?: string | null;
   status?: string;
 }

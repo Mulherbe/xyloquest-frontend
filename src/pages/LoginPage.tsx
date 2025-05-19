@@ -16,8 +16,8 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('fred@example.com');
+  const [password, setPassword] = useState('password');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {

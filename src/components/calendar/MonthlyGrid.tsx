@@ -1,4 +1,3 @@
-// MonthlyGrid.tsx
 import {
   Typography, Paper, Grid, Stack, IconButton, Box
 } from '@mui/material';
@@ -13,6 +12,7 @@ interface MonthlyGridProps {
   onPrev: () => void;
   onNext: () => void;
   onEventClick: (event: EventItem) => void;
+  onDayClick: (day: Dayjs) => void;
 }
 
 const MonthlyGrid = ({
@@ -21,6 +21,7 @@ const MonthlyGrid = ({
   onPrev,
   onNext,
   onEventClick,
+  onDayClick,
 }: MonthlyGridProps) => {
   const startOfGrid = currentMonth.startOf('month').startOf('week');
   const endOfGrid = currentMonth.endOf('month').endOf('week');
@@ -34,8 +35,17 @@ const MonthlyGrid = ({
 
   const weekdays = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
+  const getBorderColor = (status?: string) => {
+    switch (status) {
+      case 'done': return '#4caf50';
+      case 'skipped': return '#f44336';
+      default: return '#9146FF66';
+    }
+  };
+
   return (
-    <Box>
+    <Box sx={{ px: 3 }}>
+      {/* Navigation */}
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2} px={1}>
         <IconButton onClick={onPrev} sx={{ color: '#9146FF' }}><ArrowBackIcon /></IconButton>
         <Typography color="#fff" variant="h6">
@@ -44,6 +54,7 @@ const MonthlyGrid = ({
         <IconButton onClick={onNext} sx={{ color: '#9146FF' }}><ArrowForwardIcon /></IconButton>
       </Stack>
 
+      {/* Jours de la semaine */}
       <Grid container spacing={2} sx={{ mb: 1 }}>
         {weekdays.map((dayName) => (
           <Grid item xs={12 / 7} key={dayName}>
@@ -52,9 +63,13 @@ const MonthlyGrid = ({
         ))}
       </Grid>
 
+      {/* Grille du mois */}
       <Grid container spacing={2}>
         {days.map((day) => {
-          const dayEvents = events.filter((e) => dayjs(e.date).isSame(day, 'day'));
+          const dayEvents = events
+            .filter((e): e is EventItem => !!e && typeof e.date === 'string')
+            .filter((e) => dayjs(e.date).isValid() && dayjs(e.date).isSame(day, 'day'));
+
           const isCurrentMonth = day.month() === currentMonth.month();
           const isToday = day.isSame(dayjs(), 'day');
 
@@ -62,8 +77,12 @@ const MonthlyGrid = ({
             <Grid item xs={12 / 7} key={day.toString()}>
               <Paper
                 elevation={2}
+                onClick={(e) => {
+                  if ((e.target as HTMLElement).dataset.event === 'true') return;
+                  onDayClick(day);
+                }}
                 sx={{
-                  height: 120,
+                  height: 180,
                   backgroundColor: isToday
                     ? '#29164a'
                     : isCurrentMonth ? '#1e1e1e' : '#151515',
@@ -72,6 +91,10 @@ const MonthlyGrid = ({
                   p: 1,
                   color: '#fff',
                   overflowY: 'auto',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: '#252525',
+                  },
                 }}
               >
                 <Typography
@@ -86,29 +109,24 @@ const MonthlyGrid = ({
                   dayEvents.map((event) => (
                     <Typography
                       key={event.id}
-                      variant="caption"
+                      data-event="true"
+                      variant="body2"
                       onClick={() => onEventClick(event)}
                       sx={{
-                        display: 'block',
-                        fontSize: '0.75rem',
-                        backgroundColor:
-                          event.status === 'done'
-                            ? '#2e7d32'
-                            : event.status === 'failed'
-                            ? '#c62828'
-                            : '#9146FF22',
-                        color:
-                          event.status === 'done'
-                            ? '#a5d6a7'
-                            : event.status === 'failed'
-                            ? '#ef9a9a'
-                            : '#ccc',
-                        px: 0.5,
+                        border: `1px solid ${getBorderColor(event.status)}`,
+                        backgroundColor: `${event.color ?? '#9146FF'}4D`,
+                        color: '#fff',
                         borderRadius: 1,
+                        px: 1,
+                        py: 0.5,
                         mb: 0.5,
+                        fontSize: '0.75rem',
                         cursor: 'pointer',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
                         '&:hover': {
-                          opacity: 0.8,
+                          backgroundColor: `${event.color ?? '#9146FF'}33`,
                         },
                       }}
                     >

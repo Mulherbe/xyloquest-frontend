@@ -1,93 +1,28 @@
 import {
   Box,
-  Button,
   Container,
   Typography,
-  Grid,
-  Card,
-  CardContent,
   Fade,
-  Divider,
   IconButton,
+  Button,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import axios from 'axios';
+import { useActivities } from '../contexts/ActivityContext';
 import logo from '../assets/images/logo.png';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CalendarView from '../components/calendar/CalendarView';
-
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  CartesianGrid,
-} from 'recharts';
-
-interface DashboardData {
-  activities: number;
-  activityTypes: number;
-  schedules: number;
-  logs: number;
-}
+import { useNavigate } from 'react-router-dom';
+import ActivityStatsChart from '../components/chart/ActivityStatsChart';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
-  const [data, setData] = useState<DashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchDashboardStats = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const headers = { Authorization: `Bearer ${token}` };
-
-      const [activitiesRes, typesRes, schedulesRes, logsRes] = await Promise.all([
-        axios.get('http://xyloquest-backend.test/api/activities', { headers }),
-        axios.get('http://xyloquest-backend.test/api/activity-types', { headers }),
-        axios.get('http://xyloquest-backend.test/api/schedules', { headers }),
-        axios.get('http://xyloquest-backend.test/api/logs', { headers }),
-      ]);
-
-      setData({
-        activities: activitiesRes.data.data.length,
-        activityTypes: typesRes.data.data.length,
-        schedules: schedulesRes.data.data.length,
-        logs: logsRes.data.data.length,
-      });
-    } catch (err) {
-      console.error('Erreur chargement dashboard :', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDashboardStats();
-  }, []);
+  const { events: activities, loading: loadingActivities } = useActivities();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     window.location.href = '/';
   };
-
-  const chartData = [
-    { name: 'Activités', value: data?.activities ?? 0 },
-    { name: 'Types', value: data?.activityTypes ?? 0 },
-    { name: 'Plannings', value: data?.schedules ?? 0 },
-    { name: 'Logs', value: data?.logs ?? 0 },
-  ];
-
-  const fakeWeeklyData = [
-    { week: 'S1', plannings: 3 },
-    { week: 'S2', plannings: 5 },
-    { week: 'S3', plannings: 2 },
-    { week: 'S4', plannings: 6 },
-  ];
 
   return (
     <Box sx={{ backgroundColor: '#0f0f0f', minHeight: '100vh', py: 4 }}>
@@ -106,8 +41,9 @@ const Dashboard = () => {
             <LogoutIcon />
           </IconButton>
         </Box>
-          
-        <Fade in={!loading}>
+
+        {/* BIENVENUE */}
+        <Fade in={!loadingActivities}>
           <Box
             sx={{
               backgroundColor: '#181818',
@@ -118,19 +54,32 @@ const Dashboard = () => {
             }}
           >
             <Typography variant="h4" color="#fff" gutterBottom>
-              Bienvenue, {user?.name ?? 'Utilisateur'} 👋
+              Bienvenue, {user?.name ?? 'Fred'} 👋
             </Typography>
-            <Typography variant="subtitle1" color="#aaa" sx={{ mb: 4 }}>
-              Connecté avec : {user?.email}
+            <Typography variant="body2" color="#aaa">
+              Tu as {activities.length} activité{activities.length > 1 ? 's enregistrées' : ' enregistrée'}.
             </Typography>
           </Box>
         </Fade>
-              <CalendarView />
+
+        {/* CALENDRIER */}
+        <Box mt={4}>
+          <CalendarView events={activities} loading={loadingActivities} />
+        </Box>
+
+        {/* BOUTON GESTION TYPE D'ACTIVITÉ */}
+        <Button
+          variant="outlined"
+          sx={{ mt: 3, color: '#9146FF', borderColor: '#9146FF' }}
+          onClick={() => navigate('/activity-types')}
+        >
+          Gérer les types d'activité
+        </Button>
+        <ActivityStatsChart />
 
       </Container>
     </Box>
   );
 };
-
 
 export default Dashboard;
