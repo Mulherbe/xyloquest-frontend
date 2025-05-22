@@ -95,7 +95,7 @@ const CalendarView = () => {
         />
       ) : (
         <MonthlyGrid
-          currentMonth={referenceDate}
+          referenceDate={referenceDate}
           events={events}
           onPrev={handlePrev}
           onNext={handleNext}

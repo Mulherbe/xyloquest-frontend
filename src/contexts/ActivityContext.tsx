@@ -5,11 +5,13 @@ export interface EventItem {
   id: number;
   title: string;
   description?: string;
-  date: string;
+  start_date: string;
+  end_date: string;
   status?: string;
   type?: string;
   color?: string;
   completed_at?: string | null;
+  activity_type_id?: number;
 }
 
 interface RawActivity {
@@ -17,8 +19,10 @@ interface RawActivity {
   title: string;
   description?: string;
   start_date: string;
+  end_date: string;
   status?: string;
   completed_at?: string | null;
+  activity_type_id?: number;
   activity_type?: {
     name?: string;
     color?: string;
@@ -29,11 +33,14 @@ export const transformRawActivity = (raw: RawActivity): EventItem => ({
   id: raw.id,
   title: raw.title,
   description: raw.description,
-  date: raw.start_date,
+  start_date: raw.start_date,
+  end_date: raw.end_date,
   status: raw.status,
   completed_at: raw.completed_at,
   type: raw.activity_type?.name ?? 'Autre',
   color: raw.activity_type?.color ?? '#9146FF',
+  activity_type_id: raw.activity_type_id, 
+
 });
 
 interface ActivityContextType {

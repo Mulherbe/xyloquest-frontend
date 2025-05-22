@@ -3,44 +3,27 @@ import {
   Container,
   Typography,
   Fade,
-  IconButton,
   Button,
 } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { useActivities } from '../contexts/ActivityContext';
-import logo from '../assets/images/logo.png';
-import LogoutIcon from '@mui/icons-material/Logout';
 import CalendarView from '../components/calendar/CalendarView';
 import { useNavigate } from 'react-router-dom';
 import ActivityStatsChart from '../components/chart/ActivityStatsChart';
-
+import MonthlyScoreCard from '../components/chart/MonthlyScoreCard';
+import MonthlyScoreChart from '../components/chart/MonthlyScoreChart';
+import Header from '../components/global/Header';
 const Dashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { events: activities, loading: loadingActivities } = useActivities();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    window.location.href = '/';
-  };
 
   return (
     <Box sx={{ backgroundColor: '#0f0f0f', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="lg">
         {/* HEADER */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
-          <img
-            src={logo}
-            alt="Logo Xyloquest"
-            style={{
-              maxWidth: '220px',
-              filter: 'drop-shadow(0 0 16px #9146FF)',
-            }}
-          />
-          <IconButton onClick={handleLogout} sx={{ color: '#9146FF' }}>
-            <LogoutIcon />
-          </IconButton>
-        </Box>
+       <Header />
 
         {/* BIENVENUE */}
         <Fade in={!loadingActivities}>
@@ -59,6 +42,8 @@ const Dashboard = () => {
             <Typography variant="body2" color="#aaa">
               Tu as {activities.length} activité{activities.length > 1 ? 's enregistrées' : ' enregistrée'}.
             </Typography>
+            <MonthlyScoreCard />
+
           </Box>
         </Fade>
 
@@ -75,7 +60,11 @@ const Dashboard = () => {
         >
           Gérer les types d'activité
         </Button>
+       <Box mt={4} display="flex" gap={2} flexWrap="wrap">
         <ActivityStatsChart />
+        <MonthlyScoreChart />
+      </Box>
+
 
       </Container>
     </Box>

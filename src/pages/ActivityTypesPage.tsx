@@ -1,20 +1,35 @@
-import { Box, Typography, Stack, IconButton, TextField, Button, Paper } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Stack,
+  IconButton,
+  TextField,
+  Button,
+  Paper,
+  Container
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import Header from '../components/global/Header';
 
 interface ActivityType {
   id: number;
   name: string;
   color: string;
+  default_points_per_hour: number;
 }
 
 const ActivityTypesPage = () => {
   const [types, setTypes] = useState<ActivityType[]>([]);
-  const [newType, setNewType] = useState({ name: '', color: '#9146FF' });
+  const [newType, setNewType] = useState({
+    name: '',
+    color: '#9146FF',
+    default_points_per_hour: 1,
+  });
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingData, setEditingData] = useState<Partial<ActivityType>>({});
 
@@ -33,7 +48,7 @@ const ActivityTypesPage = () => {
   const handleAdd = async () => {
     if (!newType.name.trim()) return;
     await axios.post('http://xyloquest-backend.test/api/activity-types', newType, { headers });
-    setNewType({ name: '', color: '#9146FF' });
+    setNewType({ name: '', color: '#9146FF', default_points_per_hour: 1 });
     fetchTypes();
   };
 
@@ -59,7 +74,11 @@ const ActivityTypesPage = () => {
   };
 
   return (
-    <Box sx={{ backgroundColor: '#0f0f0f', minHeight: '100vh', p: 4, color: '#fff' }}>
+    <Box sx={{ backgroundColor: '#0f0f0f', minHeight: '100vh', py: 4 }}>
+      <Container maxWidth="lg">
+
+      <Header />
+
       <Typography variant="h4" sx={{ mb: 3 }}>Types d'activité</Typography>
 
       {/* Formulaire d'ajout */}
@@ -79,11 +98,20 @@ const ActivityTypesPage = () => {
           InputLabelProps={{ shrink: true, style: { color: '#ccc' } }}
           sx={{ width: 100 }}
         />
-        
-        <Button                   
+        <TextField
+          label="Points/h"
+          type="number"
+          value={newType.default_points_per_hour}
+          onChange={(e) => setNewType({ ...newType, default_points_per_hour: parseInt(e.target.value) || 0 })}
+          sx={{ input: { color: '#fff' }, width: 100 }}
+          InputLabelProps={{ style: { color: '#ccc' } }}
+        />
+        <Button
           variant="outlined"
           sx={{ mt: 3, color: '#9146FF', borderColor: '#9146FF' }}
-          onClick={handleAdd} >Ajouter
+          onClick={handleAdd}
+        >
+          Ajouter
         </Button>
       </Stack>
 
@@ -104,6 +132,19 @@ const ActivityTypesPage = () => {
                   onChange={(e) => setEditingData({ ...editingData, color: e.target.value })}
                   sx={{ width: 80 }}
                 />
+                <TextField
+                  label="Points/h"
+                  type="number"
+                  value={editingData.default_points_per_hour}
+                  onChange={(e) =>
+                    setEditingData({
+                      ...editingData,
+                      default_points_per_hour: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  sx={{ input: { color: '#fff' }, width: 100 }}
+                  InputLabelProps={{ style: { color: '#ccc' } }}
+                />
                 <IconButton onClick={handleSave} sx={{ color: 'green' }}><SaveIcon /></IconButton>
                 <IconButton onClick={() => setEditingId(null)} sx={{ color: 'red' }}><CloseIcon /></IconButton>
               </Stack>
@@ -113,7 +154,9 @@ const ActivityTypesPage = () => {
                   <Box
                     sx={{ width: 16, height: 16, backgroundColor: type.color, borderRadius: '50%' }}
                   />
-                  <Typography sx={{ color: '#fff' }}>{type.name}</Typography>
+                  <Typography sx={{ color: '#fff' }}>
+                    {type.name} — {type.default_points_per_hour} pt/h
+                  </Typography>
                 </Box>
                 <Stack direction="row" spacing={1}>
                   <IconButton onClick={() => handleEdit(type)} sx={{ color: '#9146FF' }}><EditIcon /></IconButton>
@@ -124,6 +167,8 @@ const ActivityTypesPage = () => {
           </Paper>
         ))}
       </Stack>
+  </Container >
+
     </Box>
   );
 };

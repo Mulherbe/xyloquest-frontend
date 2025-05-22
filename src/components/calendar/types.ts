@@ -7,4 +7,6 @@ export interface EventItem {
   color?: string;
   completed_at?: string | null;
   status?: string;
+  start_date: string;
+  end_date: string;
 }
