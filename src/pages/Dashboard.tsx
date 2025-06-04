@@ -1,4 +1,4 @@
-import {
+import { 
   Box,
   Container,
   Typography,
@@ -13,17 +13,18 @@ import ActivityStatsChart from '../components/chart/ActivityStatsChart';
 import MonthlyScoreCard from '../components/chart/MonthlyScoreCard';
 import MonthlyScoreChart from '../components/chart/MonthlyScoreChart';
 import Header from '../components/global/Header';
+import TaskStatusDoughnut from '../components/chart/TaskStatusDoughnut';
+
 const Dashboard = () => {
   const { user } = useAuth();
   const { events: activities, loading: loadingActivities } = useActivities();
   const navigate = useNavigate();
 
-
   return (
     <Box sx={{ backgroundColor: '#0f0f0f', minHeight: '100vh', py: 4 }}>
       <Container maxWidth="lg">
         {/* HEADER */}
-       <Header />
+        <Header />
 
         {/* BIENVENUE */}
         <Fade in={!loadingActivities}>
@@ -43,7 +44,6 @@ const Dashboard = () => {
               Tu as {activities.length} activité{activities.length > 1 ? 's enregistrées' : ' enregistrée'}.
             </Typography>
             <MonthlyScoreCard />
-
           </Box>
         </Fade>
 
@@ -52,20 +52,30 @@ const Dashboard = () => {
           <CalendarView events={activities} loading={loadingActivities} />
         </Box>
 
-        {/* BOUTON GESTION TYPE D'ACTIVITÉ */}
-        <Button
-          variant="outlined"
-          sx={{ mt: 3, color: '#9146FF', borderColor: '#9146FF' }}
-          onClick={() => navigate('/activity-types')}
-        >
-          Gérer les types d'activité
-        </Button>
-       <Box mt={4} display="flex" gap={2} flexWrap="wrap">
-        <ActivityStatsChart />
-        <MonthlyScoreChart />
-      </Box>
+        {/* BOUTONS */}
+        <Box mt={3} display="flex" gap={2} flexWrap="wrap">
+          <Button
+            variant="outlined"
+            sx={{ color: '#9146FF', borderColor: '#9146FF' }}
+            onClick={() => navigate('/projects')}
+          >
+            Gérer mes projets
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{ color: '#9146FF', borderColor: '#9146FF' }}
+            onClick={() => navigate('/activity-types')}
+          >
+            Gérer les types d'activité
+          </Button>
+        </Box>
 
-
+        {/* GRAPHIQUES */}
+        <Box mt={4} display="flex" gap={2} flexWrap="wrap">
+          <ActivityStatsChart />
+          <MonthlyScoreChart />
+          <TaskStatusDoughnut projectId={undefined} />
+        </Box>
       </Container>
     </Box>
   );

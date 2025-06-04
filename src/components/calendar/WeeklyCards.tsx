@@ -34,7 +34,7 @@ const WeeklyCards = ({
     events.filter((e) => dayjs.utc(e.start_date).local().isSame(day, 'day'));
 
   const getTopOffset = (rawStart: string) => {
-    const start = dayjs.utc(rawStart).local();
+    const start = dayjs.utc(rawStart);
     const hour = start.hour();
     const minute = start.minute();
     if (hour < START_HOUR || hour > END_HOUR) return -9999;
@@ -42,8 +42,8 @@ const WeeklyCards = ({
   };
 
   const getEventHeight = (rawStart: string, rawEnd: string) => {
-    let start = dayjs.utc(rawStart).local();
-    let end = dayjs.utc(rawEnd).local();
+    let start = dayjs.utc(rawStart);
+    let end = dayjs.utc(rawEnd);
 
     if (start.hour() < START_HOUR) start = start.set('hour', START_HOUR).set('minute', 0);
     if (end.hour() > END_HOUR) end = end.set('hour', END_HOUR + 1).set('minute', 0);

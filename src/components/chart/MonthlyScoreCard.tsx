@@ -19,7 +19,7 @@ const MonthlyScoreCard = () => {
           },
         });
           console.log(res)
-
+        
         setGoal(res.data.goal_points ?? 0);
         setEarned(res.data.earned_points ?? 0);
       } catch (error) {
