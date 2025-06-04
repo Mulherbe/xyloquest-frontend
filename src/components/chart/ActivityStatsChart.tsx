@@ -17,7 +17,7 @@ const ActivityStatsChart = () => {
   events.forEach((activity) => {
     if (activity.status === 'pending') return;
 
-    const monthKey = dayjs(activity.date).format('YYYY-MM');
+    const monthKey = dayjs(activity.start_date).format('YYYY-MM');
     if (!statsByMonth[monthKey]) {
       statsByMonth[monthKey] = { done: 0, skipped: 0 };
     }
