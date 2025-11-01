@@ -6,7 +6,6 @@ import ProjectList from '../pages/projects/ProjectList';
 import ProjectForm from '../pages/projects/ProjectForm';
 import TaskBoard from '../pages/projects/TaskBoard';
 import TaskForm from '../pages/projects/TaskForm';
-import TaskDetail from '../pages/projects/TaskDetail';
 import TaskStatusConfig from '../pages/projects/TaskStatusConfig';
 import TagManager from '../pages/projects/TagManager';
 
@@ -46,10 +45,6 @@ export const router = createBrowserRouter([
   {
     path: '/projects/:id/tasks/:taskId/edit',
     element: <TaskForm />,
-  },
-  {
-    path: '/tasks/:taskId',
-    element: <TaskDetail />,
   },
   {
     path: '/task-status',
